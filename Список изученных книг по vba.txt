@@ -1,0 +1,18 @@
+1. Excel VBA. Notes for Professionals. (free, https://books.goalkicker.com/ExcelVBABook/)
+
+The Excel VBA Notes for Professionals book is compiled from Stack Overflow Documentation, the content is written by the beautiful people at Stack Overflow. Text content is released under Creative Commons BY-SA. See credits at the end of this book whom contributed to the various chapters. Images may be copyright of their respective owners unless otherwise specified
+
+Book created for educational purposes and is not affiliated with Excel VBA group(s), company(s) nor Stack Overflow. All trademarks belong to their respective company owners
+
+128 pages, published on June 2018
+
+2. Excel 2019. Power Programming with VBA - by Michael Alexander and Dick Kusleika(https://www.amazon.com/Excel-2019-Power-Programming-VBA/dp/1119514924)
+
+Excel 2019 Power Programming with VBA is fully updated to cover all the latest tools and tricks of Excel 2019. Encompassing an analysis of Excel application development and a complete introduction to Visual Basic for Applications (VBA), this comprehensive book presents all of the techniques you need to develop both large and small Excel applications. Over 800 pages of tips, tricks, and best practices shed light on key topics, such as the Excel interface, file formats, enhanced interactivity with other Office applications, and improved collaboration features. 
+
+Understanding how to leverage VBA to improve your Excel programming skills can enhance the quality of deliverables that you produce―and can help you take your career to the next level.
+
+Explore fully updated content that offers comprehensive coverage through over 900 pages of tips, tricks, and techniques
+Leverage templates and worksheets that put your new knowledge in action, and reinforce the skills introduced in the text
+Improve your capabilities regarding Excel programming with VBA, unlocking more of your potential in the office
+Excel 2019 Power Programming with VBA is a fundamental resource for intermediate to advanced users who want to polish their skills regarding spreadsheet applications using VBA.
