@@ -1,35 +1,15 @@
+Attribute VB_Name = "Module1"
 Option Explicit
-
-Function isHeaderCell(value As String, cell As String) As Boolean
-
-        Dim arr() As String
-        Dim a As Integer
-        Dim position As Long
-        isHeaderCell = False
-        
-        arr = Split(value, "mySuperSeparator")
-        For a = LBound(arr) To UBound(arr)
-            position = InStr(1, cell, arr(a), vbTextCompare)
-            If position <> 0 Then
-             'Call Log(arr(a), cell)
-             isHeaderCell = True
-            Else
-             isHeaderCell = False
-             Exit Function
-            End If
-        Next
-        
-End Function
 
 Sub Log(fileName As String, text As String)
 
-    With ThisWorkbook.Sheets("Р›РѕРі")
+    With ThisWorkbook.Sheets("Лог")
         Dim nextRow As Integer
         If IsEmpty(.Cells(1, 1)) Or IsEmpty(.Cells(2, 1)) Then
-            .Cells(1, 1) = "Р”Р°С‚Р° Рё РІСЂРµРјСЏ"
-            .Cells(1, 2) = "Р¤Р°Р№Р»"
-            .Cells(1, 3) = "Р”РµР№СЃС‚РІРёРµ / РѕРїРёСЃР°РЅРёРµ РѕС€РёР±РєРё"
-            .range("A1:C1").Interior.ColorIndex = 34 'СЃРІРµС‚Р»Рѕ РіРѕР»СѓР±РѕР№
+            .Cells(1, 1) = "Дата и время"
+            .Cells(1, 2) = "Файл"
+            .Cells(1, 3) = "Действие / описание ошибки"
+            .range("A1:C1").Interior.ColorIndex = 34 'светло голубой
             nextRow = 2
         Else
             nextRow = .Cells(1, 1).End(xlDown).Offset(1, 0).row
@@ -43,174 +23,40 @@ Sub Log(fileName As String, text As String)
 End Sub
 Sub LogVocabulary(key As Variant, newVocabulary As Object)
     'Debug.Print "my key: ", key
-    Dim ws As Worksheet: Set ws = ThisWorkbook.Sheets("РќР°Р№РґРµРЅРЅС‹Рµ РЅРѕРІС‹Рµ СЃР»РѕРІР°")
+    Dim ws As Worksheet: Set ws = ThisWorkbook.Sheets("Найденные новые слова")
     Dim LastRow As Long
-    Dim fin As range, clm As Integer: Set fin = ws.range("A1:Z1").Find(key)
+    Dim key_cell As range, key_column As Integer
          
      If IsEmpty(ws.Cells(1, 1)) Then
-         ws.Cells(1, 1) = "РњРµС‚РѕРґРёРєР°"
-         ws.Cells(1, 2) = "РћР"
-         ws.Cells(1, 3) = "РџРѕРєР°Р·Р°С‚РµР»СЊ"
-         ws.Cells(1, 4) = "Р”РёР°РїР°Р·РѕРЅ"
-         ws.range("A1:D1").Interior.ColorIndex = 34 'СЃРІРµС‚Р»Рѕ РіРѕР»СѓР±РѕР№
-         LastRow = 1
-         Set fin = ws.range("A1:E1").Find(key)
-         If Not fin Is Nothing Then
-            clm = fin.column
+         ws.Cells(1, 1) = "Методика"
+         ws.Cells(1, 2) = "ОИ"
+         ws.Cells(1, 3) = "Показатель"
+         ws.Cells(1, 4) = "Диапазон"
+         ws.range("A1:D1").Interior.ColorIndex = 34 'светло голубой
+         'LastRow = 1
+    End If
+    
+         Set key_cell = ws.range("A1:E1").Find(key)
+         If Not key_cell Is Nothing Then
+            key_column = key_cell.column
          Else
             Exit Sub
          End If
-     Else
-         If Not fin Is Nothing Then
-            clm = fin.column
-         Else
-            Exit Sub
-         End If
-         Dim ColumnLetter As String: ColumnLetter = Split(ws.Cells(1, clm).Address, "$")(1)
-         LastRow = ws.Cells(ws.Rows.Count, ColumnLetter).End(xlUp).row
-     End If
+    
+         'Dim ColumnLetter As String: ColumnLetter = Split(ws.Cells(1, key_column).Address, "$")(1)
+         'LastRow = ws.Cells(ws.Rows.Count, ColumnLetter).End(xlUp).row
+     LastRow = ws.Cells(1, 1).End(xlDown).row
     
      Dim i As Long
      Dim numberOfItemsToAdd As Long: numberOfItemsToAdd = newVocabulary.Count - (LastRow - 1)
      If numberOfItemsToAdd > 0 Then
          For i = LastRow To LastRow + numberOfItemsToAdd - 1
-             ws.Cells(i + 1, clm) = newVocabulary(i - 1)
+             ws.Cells(i + 1, clm) = "'" + newVocabulary(i - 1)
          Next
      End If
     
 End Sub
         
- 
-
-Function RangeToString(myRange As range) As String
-    Dim str As String
-    Dim idx As Long
-    Dim c As range
-    Dim i As Long
-    'For Each c In myRange
-    For i = 1 To myRange.Rows.Count
-        Dim s As String: s = myRange.Cells(i, 1).text
-        If (myRange.Columns.Count = 2) Then
-            s = s & "mySuperKeyValueSeparator" & myRange.Cells(i, 2).text
-        End If
-        
-        If (myRange.Rows.Count - 1 = idx) Then
-            str = str & s
-        Else
-            str = str & s & "mySuperSeparator"
-        End If
-        idx = idx + 1
-    Next
-    
-    'Next c
-
-    RangeToString = str
-End Function
-
-Function getValueFromRange(ws As Worksheet, columnNumber As Integer, Optional step As Integer) As String
-    Dim LastRow As Long
-    Dim myRange As range
-    Debug.Print "step:", step
-    Dim ColumnLetter As String: ColumnLetter = Split(ws.Cells(1, columnNumber).Address, "$")(1)
-    Dim ColumnLetter1 As String: ColumnLetter1 = Split(ws.Cells(1, columnNumber + step).Address, "$")(1)
-    LastRow = ws.Cells(ws.Rows.Count, ColumnLetter).End(xlUp).row
-   ' Debug.Print "step:", step
-    If LastRow <> 1 Then
-        Set myRange = ws.range(ColumnLetter & (2 + step) & ":" & ColumnLetter1 & LastRow)
-        getValueFromRange = RangeToString(myRange)
-    Else
-        getValueFromRange = ""
-    End If
-End Function
-
-Function getDictionary(name As String, justOneRow As Boolean) As Dictionary
-    Dim dict As Dictionary
-    Set dict = New Dictionary
-    Dim ws As Worksheet
-     Dim i As Integer, key As String, value As String
-     
-     'Dim wS As Worksheet
-    Set ws = ThisWorkbook.Sheets(name)
-    Dim myRange As range: Set myRange = ws.UsedRange
-    
-    If name = "Р—Р°РјРµРЅС‹" Then
-    
-        For i = 1 To myRange.Columns.Count Step 2
-            If Not dict.Exists(myRange.Cells(1, i)) Then
-             key = myRange.Cells(1, i)
-             If Not IsEmpty(key) Then
-                    value = getValueFromRange(ws, i, 1)
-                 
-                    dict.Add key, value
-                    'Debug.Print dict(key)
-                End If
-             End If
-        Next
-    Else
-          For i = 1 To myRange.Columns.Count
-             If Not IsEmpty(myRange.Cells(1, i)) And Not dict.Exists(myRange.Cells(1, i)) Then
-                key = myRange.Cells(1, i)
-             If Not IsEmpty(key) Then
-                 If justOneRow = True Then
-                    value = Replace(myRange.Cells(2, i), ";", "mySuperSeparator")
-                 Else
-                    value = getValueFromRange(ws, i)
-                 End If
-                    dict.Add key, value
-                    'Debug.Print dict(key)
-             End If
-             End If
-        Next
-    End If
-    
-    Set getDictionary = dict
-    
-End Function
-
-Function Settings(buttonNumber As Integer) As Dictionary
-    Dim mainDict As Dictionary: Set mainDict = New Dictionary
-      
-    Dim dict1 As Dictionary: Set dict1 = New Dictionary
-    Set dict1 = getDictionary("РћРїРѕР·РЅР°РІР°РЅРёРµ СЃС‚РѕР»Р±С†РѕРІ", True)
-    mainDict.Add "РћРїРѕР·РЅР°РІР°РЅРёРµ СЃС‚РѕР»Р±С†РѕРІ", dict1
-    'Debug.Print "!!!" & mainDict("РћРїРѕР·РЅР°РІР°РЅРёРµ СЃС‚РѕР»Р±С†РѕРІ").Item("РњРµС‚РѕРґРёРєР°")
-    
-    If buttonNumber = 1 Then
-    
-          Dim dict2 As Dictionary: Set dict2 = New Dictionary
-          Set dict2 = getDictionary("РЎР»РѕРІР°СЂРё", False)
-          mainDict.Add "РЎР»РѕРІР°СЂРё", dict2
-          'Debug.Print "!!!" & mainDict("РЎР»РѕРІР°СЂРё").Item("РњРµС‚РѕРґРёРєР°")
-        
-          Dim dict3 As Dictionary: Set dict3 = New Dictionary
-          Set dict3 = getDictionary("РљСЂР°СЃРЅС‹Рµ СЃРёРјРІРѕР»С‹", False)
-          mainDict.Add "РљСЂР°СЃРЅС‹Рµ СЃРёРјРІРѕР»С‹", dict3
-          'Debug.Print "!!!" & mainDict("РљСЂР°СЃРЅС‹Рµ СЃРёРјРІРѕР»С‹").Item("РњРµС‚РѕРґРёРєР°")
-          
-          Dim dict4 As Dictionary: Set dict4 = New Dictionary
-          Set dict4 = getDictionary("РЎРёРјРІРѕР»С‹ СЂР°Р·РґРµР»РёС‚РµР»Рё СЃР»РѕРІ", False)
-          mainDict.Add "РЎРёРјРІРѕР»С‹ СЂР°Р·РґРµР»РёС‚РµР»Рё СЃР»РѕРІ", dict4
-          'Debug.Print "!!!" & mainDict("РЎРёРјРІРѕР»С‹ СЂР°Р·РґРµР»РёС‚РµР»Рё СЃР»РѕРІ").Item("РњРµС‚РѕРґРёРєР°")
-          
-          Dim dict5 As Dictionary: Set dict5 = New Dictionary
-          Set dict5 = getDictionary("РќР°Р№РґРµРЅРЅС‹Рµ РЅРѕРІС‹Рµ СЃР»РѕРІР°", False)
-          mainDict.Add "РќР°Р№РґРµРЅРЅС‹Рµ РЅРѕРІС‹Рµ СЃР»РѕРІР°", dict5
-          Debug.Print "!!!" & mainDict("РќР°Р№РґРµРЅРЅС‹Рµ РЅРѕРІС‹Рµ СЃР»РѕРІР°").item("РњРµС‚РѕРґРёРєР°")
-     
-     Else
-     
-        Dim dict6 As Dictionary: Set dict6 = New Dictionary
-        Set dict6 = getDictionary("Р—Р°РјРµРЅС‹", False)
-        mainDict.Add "Р—Р°РјРµРЅС‹", dict6
-        Debug.Print "!!!" & mainDict("Р—Р°РјРµРЅС‹").item("РњРµС‚РѕРґРёРєР°")
-        
-     End If
-
-    Set Settings = mainDict
-  
-End Function
-
-
 Function in_array(my_array, my_value)
     Dim i As Long
     in_array = False
@@ -228,7 +74,7 @@ Function MultipleSearch(ByVal key As String, rng As range, value As String, Opti
     Dim rNew As range
     Dim rCell As range
         
-    If (key = "РќРѕРјРµСЂ") Then
+    If (key = "Номер") Then
         Dim counter As Long
         Dim idx As Long
         Dim prevCellValue As Long
@@ -343,7 +189,7 @@ Function MultipleSearchByWords(key As Variant, rng As range, separators_ As Stri
     Dim i As Long
     
     Select Case key
-    Case Is = "РќРѕРјРµСЂ"
+    Case Is = "Номер"
     
         Dim rng1 As Variant
         If rng.Cells.Count > 1 Then
@@ -428,98 +274,15 @@ Function UnSelectMergedCells(rng As range) As range
     Set UnSelectMergedCells = rNew
 End Function
 
-Function isRowEmpty(row As Integer) As Boolean
-    Dim j As Long
-    For j = 1 To Selection.Columns.Count
-       If Cells(row, j) <> "" Then
-       isRowEmpty = False
-       Exit Function
-     End If
-    Next
-    isRowEmpty = True
-End Function
-
-Function isRowEnumerated(row As Integer) As Boolean
-    isRowEnumerated = False
-    Dim counter As Long, j As Long
-
-    For j = 1 To Selection.Columns.Count
-       If Cells(row, j) <> "" And IsNumeric(Cells(row, j)) And CLng(Cells(row, j) < 15) Then
-           counter = counter + 1
-       End If
-    Next
-    
-    If counter > Selection.Columns.Count / 2 Then
-     isRowEnumerated = True
-    End If
- 
-End Function
-
-Function isRowMerged(row As Integer) As Boolean
-    isRowMerged = False
-    Dim counter As Long, j As Long
-
-    For j = 1 To Selection.Columns.Count
-       If Cells(row, j).MergeCells And Cells(row, j).Address = Cells(row, j).MergeArea.Cells(1).Address And Cells(row, j).MergeArea.Columns.Count > 1 Then
-            counter = counter + Cells(row, j).MergeArea.Columns.Count
-       End If
-    Next
-    
-    If counter > Selection.Columns.Count / 2 Then
-     isRowMerged = True
-    End If
- 
-End Function
-
-Function isRowHeader(row As Integer, dict As Dictionary) As Dictionary
-    Set isRowHeader = Nothing
-    'Dim counter As Integer
-    Dim range As range
-    Dim key As Variant
-    Dim headerDict As Dictionary
-    Set headerDict = New Dictionary
-    Dim j As Integer
-    
-    For j = 1 To Selection.Columns.Count
-    
-    For Each key In dict("РћРїРѕР·РЅР°РІР°РЅРёРµ СЃС‚РѕР»Р±С†РѕРІ").keyS
-        
-       If isHeaderCell(dict("РћРїРѕР·РЅР°РІР°РЅРёРµ СЃС‚РѕР»Р±С†РѕРІ").item(key), Cells(row, j)) Then
-           Debug.Print "РћРїРѕР·РЅР°РІР°РЅРёРµ СЃС‚РѕР»Р±С†РѕРІ : ", key, j
-           headerDict.Add key, j
-           'counter = counter + 1
-           Call addCellToRange(range, Cells(row, j))
-           
-       End If
-    Next
-    Next
-    
-    Set isRowHeader = Nothing
-    
-    On Error GoTo MetkaH
-    If Not range Is Nothing And range.Cells.Count > 1 Then
-        Set isRowHeader = headerDict
-        range.Interior.ColorIndex = 34 'СЃРІРµС‚Р»Рѕ РіРѕР»СѓР±РѕР№
-    End If
-    On Error GoTo 0
-     
-    'If range Is Nothing Or range.Cells.Count < 2 Then
-     ' Set isRowHeader = Nothing
-    'Else
-    '  Set isRowHeader = headerDict
-     ' range.Interior.ColorIndex = 34 'СЃРІРµС‚Р»Рѕ РіРѕР»СѓР±РѕР№
-    'End If
-MetkaH:
-End Function
 
 
-Sub ProcessWorkbook(wb As Workbook, dict As Dictionary, buttonNumber As Integer)
+Sub ProcessWorkbook() 'wb As Workbook, dict As Dictionary, buttonNumber As Integer)
+    Dim wb As Workbook: Set wb = Workbooks.Open(fileName:="C:\Users\iri inc\source\repos\vba-afterScan\100 примеров\test\Тест1-1.xlsx")
+    Dim buttonNumber As Integer: buttonNumber = 1
+    Dim dict As Dictionary: Set dict = Settings(buttonNumber)
+    'On Error GoTo Metka
     
-    'Dim wb As Workbook: Set wb = Workbooks.Open(fileName:="C:\Users\iri inc\Downloads\100 РїСЂРёРјРµСЂРѕРІ\test\РўРµСЃС‚1-1.xlsx")
-    'Dim buttonNumber As Integer: buttonNumber = 1
-    'Dim dict As Dictionary: Set dict = New Dictionary: Set dict = Settings(buttonNumber)
-    On Error GoTo Metka
-    'Dim tst As range: Debug.Print tst.Count
+    
     
     If buttonNumber = 1 Then
     Cells.Select
@@ -534,12 +297,15 @@ Sub ProcessWorkbook(wb As Workbook, dict As Dictionary, buttonNumber As Integer)
   uRange.Select
     
   Dim i As Integer
-  Dim emptyR() As Integer: ReDim Preserve emptyR(0)
+  
+  
+  
+  
+  Dim emptyR() As Integer: ReDim emptyR(0)
   Dim isRowEmpt As Boolean
-  Dim enumeratedR() As Integer: ReDim Preserve enumeratedR(0)
-  Dim mergedR() As Integer: ReDim Preserve mergedR(0)
-  Dim headerR() As Integer: ReDim Preserve headerR(0)
-  'Dim headerR1 As Dictionary: Set headerR1 = New Dictionary
+  Dim enumeratedR() As Integer: ReDim emptyR(0)
+  Dim mergedR() As Integer: ReDim emptyR(0)
+  Dim headerR() As Integer: ReDim emptyR(0)
   Dim lastRegionRow As Integer
   Dim columnRange As range
   
@@ -550,33 +316,32 @@ Sub ProcessWorkbook(wb As Workbook, dict As Dictionary, buttonNumber As Integer)
     isRowEmpt = isRowEmpty(i)
     If isRowEmpt Then
           emptyR(UBound(emptyR)) = i
-          Debug.Print "empty: ", emptyR(UBound(emptyR))
-          ReDim Preserve emptyR(0 To UBound(emptyR) + 1)
+          Debug.Print "row " & emptyR(UBound(emptyR)) & "rowType:empty"
+          ReDim Preserve emptyR(UBound(emptyR) + 1)
     End If
     
     If isRowEmpt = False And isRowEnumerated(i) Then
           enumeratedR(UBound(enumeratedR)) = i
-          Debug.Print "enumerated: ", enumeratedR(UBound(enumeratedR))
-          ReDim Preserve enumeratedR(0 To UBound(enumeratedR) + 1)
+          Debug.Print "row " & enumeratedR(UBound(enumeratedR)) & "rowType:enumerated"
+          ReDim Preserve enumeratedR(UBound(enumeratedR) + 1)
     End If
     
     If isRowEmpt = False And isRowMerged(i) Then
           mergedR(UBound(mergedR)) = i
-          Debug.Print "merged: ", mergedR(UBound(mergedR))
-          ReDim Preserve mergedR(0 To UBound(mergedR) + 1)
+          Debug.Print "row " & mergedR(UBound(mergedR)) & "rowType:merged"
+          ReDim Preserve mergedR(UBound(mergedR) + 1)
     End If
     
     Dim header As Dictionary: Set header = New Dictionary
     Set header = isRowHeader(i, dict)
     If Not header Is Nothing Then
         headerR(UBound(headerR)) = i
-        'headerR1.Add i, header
-        Debug.Print "header row: ", i
-        ReDim Preserve headerR(0 To UBound(headerR) + 1)
+        Debug.Print "row " & headerR(UBound(headerR)) & "rowType:header"
+        ReDim Preserve headerR(UBound(headerR) + 1)
     End If
     
   Next
-   lastRegionRow = uRange.Rows.Count 'РґРѕРїСѓС‰РµРЅРёРµ, С‡С‚Рѕ РІС‹РґРµР»РµРЅРёРµ РЅР°С‡Р°С‚Рѕ СЃ РїРµСЂРІРѕР№ СЃС‚СЂРѕРєРё Р»РёСЃС‚Р°
+   lastRegionRow = uRange.Rows.Count 'допущение, что выделение начато с первой строки листа
    Dim header1 As Dictionary
     
    For i = LBound(headerR) + 1 To UBound(headerR)
@@ -614,32 +379,32 @@ Sub ProcessWorkbook(wb As Workbook, dict As Dictionary, buttonNumber As Integer)
                         
                         If columnRange_exlMerged.Count = 1 Then
                             If IsEmpty(columnRange_exlMerged.Cells(1)) Then
-                                columnRange_exlMerged.Cells(1).Interior.ColorIndex = 6 'Р¶РµР»С‚С‹Р№
+                                columnRange_exlMerged.Cells(1).Interior.ColorIndex = 6 'желтый
                             End If
                         Else
                                 On Error Resume Next
                                  With columnRange_exlMerged.SpecialCells(xlCellTypeBlanks) 'handles 8000 rows maximum
-                                     .Interior.ColorIndex = 6 'Р¶РµР»С‚С‹Р№
+                                     .Interior.ColorIndex = 6 'желтый
                                  End With
                                 On Error GoTo Metka
                         End If
                                  
                         Dim newVocabulary As Object: Set newVocabulary = CreateObject("System.Collections.ArrayList")
                         Dim item As Variant
-                        For Each item In Split(dict("РќР°Р№РґРµРЅРЅС‹Рµ РЅРѕРІС‹Рµ СЃР»РѕРІР°").item(key), "mySuperSeparator")
+                        For Each item In Split(dict("Найденные новые слова").item(key), "mySuperSeparator")
                             newVocabulary.Add item
                         Next
                         Dim yellowRange As range
-                        Set yellowRange = MultipleSearchByWords(key, columnRange_exlMerged, dict("РЎРёРјРІРѕР»С‹ СЂР°Р·РґРµР»РёС‚РµР»Рё СЃР»РѕРІ").item(key), dict("РЎР»РѕРІР°СЂРё").item(key), newVocabulary)
+                        Set yellowRange = MultipleSearchByWords(key, columnRange_exlMerged, dict("Символы разделители слов").item(key), dict("Словари").item(key), newVocabulary)
                         If Not yellowRange Is Nothing Then
-                            yellowRange.Interior.ColorIndex = 44 'Р¶РµР»С‚С‹Р№
+                            yellowRange.Interior.ColorIndex = 44 'желтый
                         End If
                         
-                        Debug.Print "**** " & key, dict("РљСЂР°СЃРЅС‹Рµ СЃРёРјРІРѕР»С‹").item(key)
+                        Debug.Print "**** " & key, dict("Красные символы").item(key)
                         Dim redRange As range
-                        Set redRange = MultipleSearch(key, columnRange, dict("РљСЂР°СЃРЅС‹Рµ СЃРёРјРІРѕР»С‹").item(key))
+                        Set redRange = MultipleSearch(key, columnRange, dict("Красные символы").item(key))
                         If Not redRange Is Nothing Then
-                            redRange.Interior.ColorIndex = 3 'РєСЂР°СЃРЅС‹Р№
+                            redRange.Interior.ColorIndex = 3 'красный
                         End If
                         
                         Debug.Print "**-** " & key
@@ -648,9 +413,9 @@ Sub ProcessWorkbook(wb As Workbook, dict As Dictionary, buttonNumber As Integer)
                         'End If
                     Else
                         
-                        'Debug.Print "**** " & key, dict("РљСЂР°СЃРЅС‹Рµ СЃРёРјРІРѕР»С‹").item(key)
+                        'Debug.Print "**** " & key, dict("Красные символы").item(key)
                         Dim replacedRange As range
-                        Set replacedRange = MultipleSearch(key, columnRange, dict("Р—Р°РјРµРЅС‹").item(key), True)
+                        Set replacedRange = MultipleSearch(key, columnRange, dict("Замены").item(key), True)
                         
                     End If
         
@@ -668,26 +433,25 @@ Metka:
   'Err.Raise Err.Number, Err.Source, Err.Description, Err.HelpFile, Err.HelpContext
 End Sub
 
-Sub РњР°РєСЂРѕСЃ1(buttonNumber As Integer)
+Sub Макрос1(buttonNumber As Integer)
+Attribute Макрос1.VB_ProcData.VB_Invoke_Func = "g\n14"
 
-    Dim dict As Dictionary: Set dict = New Dictionary
+    Dim dict As Dictionary ': Set dict = New Dictionary
     Set dict = Settings(buttonNumber)
-     
-'Optimize Macro Speed
+   
+    Dim wb As Workbook
+    Dim myPath As String: myPath = ThisWorkbook.Sheets("Найденные новые слова").range("G2").Value2
+    
+ If Dir(myPath, vbDirectory) = vbNullString Then
+    MsgBox "Некорректный путь к каталогу введен в ячейке G2!"
+    Exit Sub
+ End If
+    
+    'Optimize Macro Speed
   Application.ScreenUpdating = False
   Application.EnableEvents = False
   Application.Calculation = xlCalculationManual
   Application.DisplayAlerts = False
-  
-  'Debug.Print "77777", Dir(myPath, vbDirectory)
-    
-    Dim wb As Workbook
-    Dim myPath As String: myPath = ThisWorkbook.Sheets("РќР°Р№РґРµРЅРЅС‹Рµ РЅРѕРІС‹Рµ СЃР»РѕРІР°").range("G2").Value2
-    
- If Dir(myPath, vbDirectory) = vbNullString Then
-    MsgBox "РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ РїСѓС‚СЊ Рє РєР°С‚Р°Р»РѕРіСѓ РІРІРµРґРµРЅ РІ СЏС‡РµР№РєРµ G2!"
-    GoTo ResetSettings
- End If
     
     Dim myExtension As String: myExtension = "*.xls*"
     Dim myFile As String: myFile = Dir(myPath & myExtension) 'Target Path with Ending Extention
@@ -721,7 +485,7 @@ Metka1:
   Loop
 
 
-ResetSettings:
+'ResetSettings:
   'Reset Macro Optimization Settings
     Application.EnableEvents = True
     Application.Calculation = xlCalculationAutomatic
@@ -736,7 +500,7 @@ ResetSettings:
     '        Err.Clear
      '       On Error GoTo 0
 End Sub
-Sub РћР±Р·РѕСЂ()
+Sub Обзор()
 
     Dim FldrPicker As FileDialog: Set FldrPicker = Application.FileDialog(msoFileDialogFolderPicker)
     Dim myPath As String
@@ -747,14 +511,16 @@ Sub РћР±Р·РѕСЂ()
             If .Show <> -1 Then Exit Sub
             myPath = .SelectedItems(1) & "\"
     End With
-    ThisWorkbook.Sheets("РќР°Р№РґРµРЅРЅС‹Рµ РЅРѕРІС‹Рµ СЃР»РѕРІР°").range("G2").Value2 = myPath
+    ThisWorkbook.Sheets("Найденные новые слова").range("G2").Value2 = myPath
  
 End Sub
 
-Sub РєРЅРѕРїРєР°1()
-        Call РњР°РєСЂРѕСЃ1(1)
+Sub кнопка1()
+Attribute кнопка1.VB_ProcData.VB_Invoke_Func = "Q\n14"
+        Call Макрос1(1)
 End Sub
 
-Sub РєРЅРѕРїРєР°2()
-        Call РњР°РєСЂРѕСЃ1(2)
+Sub кнопка2()
+Attribute кнопка2.VB_ProcData.VB_Invoke_Func = "W\n14"
+        Call Макрос1(2)
 End Sub
